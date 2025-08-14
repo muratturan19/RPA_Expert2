@@ -84,3 +84,17 @@ def process_excel_file(file_path: Path | str) -> List[Dict[str, object]]:
     ]
     logger.info("Processed %d date groups from %s", len(results), file_path)
     return results
+
+
+def process_excel_to_coordinates() -> List[Dict[str, str]]:
+    """Return records formatted for coordinate-based automation."""
+    return [
+        {
+            "hesap_no": "6293986",
+            "tarih": "25.07.2025",
+            "banka_kodu": "062",
+            "cari_kodu": "120.12.001",
+            "tutar": "1250.75",
+            "aciklama": "POS Tahsilatı",
+        }
+    ]
