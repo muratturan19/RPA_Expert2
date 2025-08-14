@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banka Hesap İşleme - Preston Xi Kurumsal Kaynak Yönetim Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            font-size: 11px;
+        }
+
+        body {
+            background: #ece9d8;
+            overflow: hidden;
+        }
+
+        /* Classic Windows Application Frame */
+        .app-window {
+            width: 100vw;
+            height: 100vh;
+            background: #ece9d8;
+            border: 2px outset #ece9d8;
+        }
+
+        /* Title Bar */
+        .title-bar {
+            background: linear-gradient(to bottom, #0a246a 0%, #a6caf0 3%, #a6caf0 6%, #4ea5ef 10%, #4b9fe8 14%, #1e3c72 100%);
+            color: white;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 20px;
+        }
+
+        .title-controls {
+            display: flex;
+            gap: 2px;
+        }
+
+        .title-btn {
+            width: 16px;
+            height: 14px;
+            background: #c0c0c0;
+            border: 1px outset #c0c0c0;
+            font-size: 8px;
+            text-align: center;
+            line-height: 12px;
+            cursor: pointer;
+        }
+
+        /* Menu Bar */
+        .menu-bar {
+            background: #ece9d8;
+            border-bottom: 1px solid #919b9c;
+            padding: 2px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item {
+            padding: 3px 8px;
+            margin: 1px;
+            cursor: pointer;
+            font-size: 11px;
+            color: #000;
+            background: transparent;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: #b6bdd2;
+            border: 1px solid #0a246a;
+        }
+
+        .menu-item.active {
+            background: #316ac5;
+            color: white;
+            border: 1px solid #0a246a;
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: -1px;
+            background: #f4f4f4;
+            border: 2px outset #f4f4f4;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .dropdown-item {
+            padding: 4px 16px 4px 22px;
+            cursor: pointer;
+            font-size: 11px;
+            color: #000;
+            white-space: nowrap;
+        }
+
+        .dropdown-item:hover {
+            background: #0a246a;
+            color: white;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: #ece9d8;
+            border-bottom: 1px solid #919b9c;
+            padding: 2px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+        }
+
+        .toolbar-separator {
+            width: 1px;
+            height: 20px;
+            background: #919b9c;
+            margin: 0 2px;
+        }
+
+        .toolbar-icon {
+            width: 23px;
+            height: 22px;
+            background: #ece9d8;
+            border: 1px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .toolbar-icon:hover {
+            border: 1px outset #ece9d8;
+            background: #ddd;
+        }
+
+        .toolbar-icon:active {
+            border: 1px inset #ece9d8;
+        }
+
+        .toolbar-icon.bank-icon {
+            background: #ffe4b5;
+        }
+
+        /* Status Area */
+        .status-area {
+            background: #ece9d8;
+            border-bottom: 1px solid #919b9c;
+            padding: 2px 8px;
+            height: 18px;
+            font-size: 10px;
+            color: #000;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            height: calc(100vh - 106px);
+            background: #ece9d8;
+        }
+
+        .left-panel {
+            width: 250px;
+            background: #ece9d8;
+            border-right: 2px inset #ece9d8;
+            padding: 8px;
+            overflow-y: auto;
+        }
+
+        .criteria-group {
+            margin-bottom: 12px;
+        }
+
+        .criteria-title {
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #000;
+            font-size: 11px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+            gap: 4px;
+        }
+
+        .form-label {
+            min-width: 60px;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .form-input {
+            flex: 1;
+            height: 20px;
+            border: 2px inset #ece9d8;
+            padding: 2px 4px;
+            font-size: 11px;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+        }
+
+        .form-input[readonly] {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .lookup-btn {
+            width: 20px;
+            height: 20px;
+            border: 1px outset #ece9d8;
+            background: #ece9d8;
+            cursor: pointer;
+            font-size: 10px;
+            text-align: center;
+            line-height: 18px;
+        }
+
+        .lookup-btn:hover {
+            background: #ddd;
+        }
+
+        .lookup-btn:active {
+            border: 1px inset #ece9d8;
+        }
+
+        .action-btn {
+            height: 23px;
+            padding: 2px 12px;
+            border: 1px outset #ece9d8;
+            background: #ece9d8;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: normal;
+            margin: 2px;
+        }
+
+        .action-btn:hover {
+            background: #ddd;
+        }
+
+        .action-btn:active {
+            border: 1px inset #ece9d8;
+        }
+
+        .action-btn.primary {
+            background: #0078d4;
+            color: white;
+            border: 1px outset #0078d4;
+        }
+
+        .action-btn.primary:hover {
+            background: #106ebe;
+        }
+
+        .action-btn.new {
+            background: #90ee90;
+            border: 1px outset #90ee90;
+        }
+
+        .action-btn.new:hover {
+            background: #7ee87e;
+        }
+
+        /* Work Area */
+        .work-area {
+            flex: 1;
+            background: white;
+            border: 2px inset #ece9d8;
+            margin: 4px;
+            padding: 8px;
+            overflow: auto;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #666;
+            margin-top: 50px;
+            line-height: 1.6;
+        }
+
+        /* Classic Windows Dialogs */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .classic-dialog {
+            background: #ece9d8;
+            border: 2px outset #ece9d8;
+            min-width: 300px;
+            max-width: 600px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .dialog-title {
+            background: linear-gradient(to bottom, #0a246a 0%, #a6caf0 3%, #a6caf0 6%, #4ea5ef 10%, #4b9fe8 14%, #1e3c72 100%);
+            color: white;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            height: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dialog-content {
+            padding: 12px;
+            background: #ece9d8;
+        }
+
+        .dialog-buttons {
+            padding: 8px 12px;
+            text-align: right;
+            background: #ece9d8;
+            border-top: 1px solid #919b9c;
+        }
+
+        .dialog-btn {
+            width: 75px;
+            height: 23px;
+            border: 1px outset #ece9d8;
+            background: #ece9d8;
+            cursor: pointer;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+
+        .dialog-btn:hover {
+            background: #ddd;
+        }
+
+        .dialog-btn:active {
+            border: 1px inset #ece9d8;
+        }
+
+        .dialog-btn.default {
+            border: 2px solid #000;
+        }
+
+        /* Search List */
+        .search-list {
+            border: 2px inset #ece9d8;
+            background: white;
+            height: 200px;
+            overflow-y: auto;
+            margin: 8px 0;
+        }
+
+        .search-item {
+            padding: 2px 6px;
+            cursor: pointer;
+            font-size: 11px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .search-item:hover {
+            background: #b6bdd2;
+        }
+
+        .search-item.selected {
+            background: #0a246a;
+            color: white;
+        }
+
+        /* Transaction Form */
+        .transaction-form {
+            width: 550px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr 80px 1fr;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .form-grid .form-label {
+            min-width: auto;
+        }
+
+        /* Data Grid */
+        .data-grid {
+            border: 1px solid #808080;
+            background: white;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .data-grid th {
+            background: #ece9d8;
+            border: 1px solid #808080;
+            padding: 2px 4px;
+            font-weight: bold;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .data-grid td {
+            border: 1px solid #d0d0d0;
+            padding: 2px 4px;
+            font-size: 11px;
+        }
+
+        .data-grid tr:nth-child(even) {
+            background: #f8f8f8;
+        }
+
+        .data-grid tr:hover {
+            background: #b6bdd2;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 22px;
+            background: #ece9d8;
+            border-top: 1px solid #919b9c;
+            padding: 2px 8px;
+            font-size: 11px;
+            color: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-panel {
+            border: 1px inset #ece9d8;
+            padding: 1px 4px;
+            background: #f0f0f0;
+        }
+
+        /* OCR Targets */
+        .ocr-target {
+            position: relative;
+        }
+
+        /* Hide debug features in production */
+        .debug-panel {
+            display: none !important;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Transaction Type Selection */
+        .transaction-types {
+            margin: 12px 0;
+        }
+
+        .transaction-type {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border: 1px solid #808080;
+            background: #f8f8f8;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .transaction-type:hover {
+            background: #b6bdd2;
+        }
+
+        .transaction-type.selected {
+            background: #0a246a;
+            color: white;
+        }
+
+        /* Icons using Unicode */
+        .icon-bank::before { content: "🏦"; }
+        .icon-chart::before { content: "📊"; }
+        .icon-print::before { content: "🖨️"; }
+        .icon-help::before { content: "❓"; }
+    </style>
+</head>
+<body>
+    <!-- Main Application Window -->
+    <div class="app-window">
+        <!-- Title Bar -->
+        <div class="title-bar">
+            <div>Banka Hesap İşleme - Preston Xi Kurumsal Kaynak Yönetim Sistemi</div>
+            <div class="title-controls">
+                <div class="title-btn">_</div>
+                <div class="title-btn">□</div>
+                <div class="title-btn">×</div>
+            </div>
+        </div>
+
+        <!-- Menu Bar -->
+        <div class="menu-bar">
+            <div class="menu-item">Muhasebe</div>
+            <div class="menu-item">Gir / Gider</div>
+            <div class="menu-item">Bütçe</div>
+            <div class="menu-item">Finans - Ödeme</div>
+            <div class="menu-item">Finans - Tahsilat</div>
+            <div class="menu-item active ocr-target" id="finansIzleMenu" data-ocr="Finans - İzle">
+                Finans - İzle
+                <div class="dropdown" id="finansIzleDropdown">
+                    <div class="dropdown-item ocr-target" data-action="banka-hesap-izleme">Banka hesap izleme</div>
+                    <div class="dropdown-item" data-action="banka-hareket-isleme">Banka Hareket İşleme</div>
+                    <div class="dropdown-item" data-action="kasa-izleme">Kasa İzleme</div>
+                    <div class="dropdown-item" data-action="cek-izleme">Çek İzleme</div>
+                </div>
+            </div>
+            <div class="menu-item">Satınalma</div>
+            <div class="menu-item">Satış</div>
+            <div class="menu-item">Stok</div>
+            <div class="menu-item">Üretim</div>
+            <div class="menu-item">Personel</div>
+            <div class="menu-item">Sabit Kıymet</div>
+            <div class="menu-item">Hesap Tabloları</div>
+            <div class="menu-item">Diğer</div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-icon ocr-target bank-icon" id="bankaToolbarIcon" data-ocr="Banka" data-action="open-banka">
+                🏛️
+            </div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-icon icon-chart" data-action="reports"></div>
+            <div class="toolbar-icon icon-print" data-action="print"></div>
+            <div class="toolbar-separator"></div>
+            <div class="toolbar-icon icon-help" data-action="help"></div>
+        </div>
+
+        <!-- Status Area -->
+        <div class="status-area">
+            <span>📁 Banka Hesap İzleme</span>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Left Panel - Search Criteria -->
+            <div class="left-panel">
+                <div class="criteria-group">
+                    <div class="criteria-title">Arama Kriterleri</div>
+                    
+                    <div class="form-row">
+                        <label class="form-label">Hesap No:</label>
+                        <input type="text" class="form-input ocr-target" id="hesapNoInput" readonly placeholder="Hesap seçin...">
+                        <button class="lookup-btn ocr-target" id="hesapSearchBtn" data-tooltip="Hesap Ara">...</button>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label class="form-label">Başlangıç:</label>
+                        <input type="date" class="form-input ocr-target" id="baslangicTarih">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label class="form-label">Bitiş:</label>
+                        <input type="date" class="form-input ocr-target" id="bitisTarih">
+                    </div>
+                    
+                    <div class="form-row">
+                        <button class="action-btn primary ocr-target" id="yenileBtn">Yenile</button>
+                    </div>
+                </div>
+
+                <div class="criteria-group">
+                    <button class="action-btn new ocr-target" id="yeniBtn" style="width: 100%;">Yeni</button>
+                </div>
+
+                <div class="criteria-group">
+                    <div class="criteria-title">İşlem Geçmişi</div>
+                    <div id="islemGecmisi" style="font-size: 10px; color: #666; padding: 4px;">
+                        Henüz işlem yok
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Work Area -->
+            <div class="work-area" id="workArea">
+                <div class="welcome-message">
+                    <h3 style="margin-bottom: 10px; color: #333;">Preston Banka Hesap İzleme</h3>
+                    <p>Hesap seçin ve tarihleri girerek "Yenile" butonuna basın</p>
+                    <p style="font-size: 10px; margin-top: 20px; color: #999;">
+                        Preston Xi v2.1.4 - © 2024 Preston Software Ltd.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Search Dialog -->
+    <div class="modal-overlay" id="hesapSearchModal">
+        <div class="classic-dialog">
+            <div class="dialog-title">
+                <span>Banka Hesap No Arama</span>
+                <span style="cursor: pointer;" onclick="hideModal('hesapSearchModal')">×</span>
+            </div>
+            <div class="dialog-content">
+                <div class="form-row">
+                    <label class="form-label">Hesap No:</label>
+                    <input type="text" class="form-input ocr-target" id="searchHesapNo" placeholder="Hesap numarası girin veya aşağıdan seçin">
+                </div>
+                <div class="search-list" id="searchResults">
+                    <!-- Dynamic content will be populated here -->
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="hesapSearchCancel">İptal</button>
+                <button class="dialog-btn default ocr-target" id="hesapSearchOk">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Type Selection Dialog -->
+    <div class="modal-overlay" id="yeniIslemModal">
+        <div class="classic-dialog">
+            <div class="dialog-title">
+                <span>Yeni İşlem Türü Seç</span>
+                <span style="cursor: pointer;" onclick="hideModal('yeniIslemModal')">×</span>
+            </div>
+            <div class="dialog-content">
+                <div class="transaction-types">
+                    <div class="transaction-type ocr-target" data-action="havale-alma">
+                        <strong>Havale alma</strong> - Gelen havale işlemi
+                    </div>
+                    <div class="transaction-type ocr-target" data-action="eft-alma">
+                        <strong>EFT alma</strong> - Gelen EFT işlemi
+                    </div>
+                    <div class="transaction-type ocr-target" data-action="pos-tahsilat">
+                        <strong>POS tahsilat</strong> - Kredi kartı tahsilatı
+                    </div>
+                    <div class="transaction-type ocr-target" data-action="nakit-tahsilat">
+                        <strong>Nakit tahsilat</strong> - Nakit tahsilat işlemi
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="yeniIslemCancel">İptal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Form Dialog -->
+    <div class="modal-overlay" id="havaleAlmaModal">
+        <div class="classic-dialog transaction-form">
+            <div class="dialog-title">
+                <span>Cari Hareketler - Havale alma</span>
+                <span style="cursor: pointer;" onclick="hideModal('havaleAlmaModal')">×</span>
+            </div>
+            <div class="dialog-content">
+                <div class="form-grid">
+                    <label class="form-label">Seri:</label>
+                    <input type="text" class="form-input ocr-target" id="havaleSerisi" value="HVAL-1" readonly>
+                    <button class="action-btn new ocr-target" id="yeniHavaleBtn">Yeni</button>
+                    <span></span>
+                    
+                    <label class="form-label">Belge No:</label>
+                    <input type="text" class="form-input ocr-target" id="havaleBelgeNo" readonly>
+                    <span></span>
+                    <span></span>
+                    
+                    <label class="form-label">Belge Tarihi:</label>
+                    <input type="date" class="form-input ocr-target" id="havaleBelgeTarihi">
+                    <label class="form-label">Valör Tarihi:</label>
+                    <input type="date" class="form-input ocr-target" id="havaleValorTarihi">
+                    
+                    <label class="form-label">Banka:</label>
+                    <input type="text" class="form-input ocr-target" id="havaleBanka" placeholder="Banka kodu">
+                    <button class="lookup-btn ocr-target" id="bankaSearchBtn">...</button>
+                    <span></span>
+                    
+                    <label class="form-label">Cari:</label>
+                    <input type="text" class="form-input ocr-target" id="havaleCari" placeholder="Cari kodu">
+                    <button class="lookup-btn ocr-target" id="cariSearchBtn">...</button>
+                    <span></span>
+                    
+                    <label class="form-label">Tutar:</label>
+                    <input type="number" class="form-input ocr-target" id="havaleTutar" step="0.01" placeholder="0.00">
+                    <span></span>
+                    <span></span>
+                    
+                    <label class="form-label">Açıklama:</label>
+                    <input type="text" class="form-input ocr-target" id="havaleAciklama" placeholder="İşlem açıklaması">
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="havaleKapat">Kapat</button>
+                <button class="dialog-btn default ocr-target" id="havaleKaydet">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Search Dialog -->
+    <div class="modal-overlay" id="bankaSearchModal">
+        <div class="classic-dialog">
+            <div class="dialog-title">
+                <span>Banka Kodu Arama</span>
+                <span style="cursor: pointer;" onclick="hideModal('bankaSearchModal')">×</span>
+            </div>
+            <div class="dialog-content">
+                <div class="form-row">
+                    <label class="form-label">Banka Kodu:</label>
+                    <input type="text" class="form-input" id="searchBankaKodu" placeholder="Banka kodu girin">
+                </div>
+                <div class="search-list" id="bankaSearchResults">
+                    <div class="search-item" data-banka="001">001 - TÜRKİYE CUMHURİYET MERKEZ BANKASI</div>
+                    <div class="search-item" data-banka="010">010 - T.C. ZİRAAT BANKASI A.Ş.</div>
+                    <div class="search-item" data-banka="012">012 - TÜRKİYE HALK BANKASI A.Ş.</div>
+                    <div class="search-item" data-banka="062">062 - TÜRKİYE GARANTİ BANKASI A.Ş.</div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="bankaSearchCancel">İptal</button>
+                <button class="dialog-btn default ocr-target" id="bankaSearchOk">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Search Dialog -->
+    <div class="modal-overlay" id="cariSearchModal">
+        <div class="classic-dialog">
+            <div class="dialog-title">
+                <span>Cari Kodu Arama</span>
+                <span style="cursor: pointer;" onclick="hideModal('cariSearchModal')">×</span>
+            </div>
+            <div class="dialog-content">
+                <div class="form-row">
+                    <label class="form-label">Cari Kodu:</label>
+                    <input type="text" class="form-input" id="searchCariKodu" placeholder="Cari kodu girin">
+                </div>
+                <div class="search-list" id="cariSearchResults">
+                    <div class="search-item" data-cari="120.01.001">120.01.001 - ABC TEKSTİL LTD. ŞTİ.</div>
+                    <div class="search-item" data-cari="120.12.001">120.12.001 - XYZ İNŞAAT A.Ş.</div>
+                    <div class="search-item" data-cari="120.15.003">120.15.003 - DEF GIDA SAN. TİC. LTD.</div>
+                    <div class="search-item" data-cari="320.01.001">320.01.001 - GHI ELEKTRONİK A.Ş.</div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="dialog-btn" id="cariSearchCancel">İptal</button>
+                <button class="dialog-btn default ocr-target" id="cariSearchOk">Tamam</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div style="display: flex; gap: 15px;">
+            <div class="status-panel">Preston Xi - Hazır</div>
+            <div class="status-panel">Bağlantı: Aktif</div>
+            <div class="status-panel">Kullanıcı: DEMO_USER</div>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <div id="automationStatus">RPA: Bekliyor</div>
+            <div id="currentTime"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global state variables
+        let selectedHesap = '';
+        let selectedBanka = '';
+        let selectedCari = '';
+        let currentBelgeNo = 634580;
+        let automationActive = false;
+        let workflowStep = 0;
+        let hesapSearchStep = 0;
+        
+        // Mock account data
+        let allHesapData = [
+            { hesap: '6293986', aciklama: 'GARANTİ 6293986 DEMETEVLER MÜSLÜOĞLU ŞUBESİ' },
+            { hesap: '3613557708', aciklama: 'DEMETEVLER 3613557708 DEMETEVLER MÜSLÜOĞLU ŞUBESİ' },
+            { hesap: '1026142', aciklama: 'HALKBANK 1026142 DEMETEVLER MÜSLÜOĞLU ŞUBESİ' },
+            { hesap: '459004', aciklama: 'ZIRAAT BANK 459004 DEMETEVLER MÜSLÜOĞLU' },
+            { hesap: '7821345', aciklama: 'AKTİF YATIRIM 7821345 ANKARA ŞUBESİ' }
+        ];
+        let filteredHesapData = [...allHesapData];
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            setupEventListeners();
+            initializeOCRTargets();
+            console.log('Preston Xi Kurumsal Kaynak Yönetim Sistemi v2.1.4');
+        });
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('tr-TR');
+        }
+
+        function initializeOCRTargets() {
+            const ocrTargets = document.querySelectorAll('.ocr-target');
+            ocrTargets.forEach((element, index) => {
+                element.setAttribute('data-ocr-id', `ocr_${index}`);
+                if (!element.getAttribute('data-ocr')) {
+                    element.setAttribute('data-ocr', element.textContent.trim() || element.placeholder || element.value);
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Step 1: Finans - İzle menu click
+            document.getElementById('finansIzleMenu').addEventListener('click', function() {
+                workflowStep = 1;
+                highlightOCRTarget(this);
+                showDropdown('finansIzleDropdown');
+                addLog('✅ STEP 1: "Finans - İzle" menüsü tıklandı');
+                updateAutomationStatus('Step 1: Menu açıldı');
+            });
+
+            // Step 2: Banka hesap izleme dropdown selection
+            document.querySelector('[data-action="banka-hesap-izleme"]').addEventListener('click', function() {
+                workflowStep = 2;
+                highlightOCRTarget(this);
+                hideAllDropdowns();
+                addLog('✅ STEP 2: "Banka hesap izleme" dropdown seçildi');
+                updateAutomationStatus('Step 2: Dropdown seçildi');
+            });
+
+            // Step 3: BANKA toolbar icon click
+            document.getElementById('bankaToolbarIcon').addEventListener('click', function() {
+                workflowStep = 3;
+                highlightOCRTarget(this);
+                this.style.background = '#ffd700';
+                setTimeout(() => this.style.background = '#ffe4b5', 500);
+                addLog('✅ STEP 3: "BANKA" toolbar ikonu tıklandı');
+                updateAutomationStatus('Step 3: BANKA toolbar açıldı');
+            });
+
+            // Step 4: Hesap search button
+            document.getElementById('hesapSearchBtn').addEventListener('click', function() {
+                workflowStep = 4;
+                hesapSearchStep = 0;
+                highlightOCRTarget(this);
+                showModal('hesapSearchModal');
+                renderHesapList();
+                addLog('✅ STEP 4: "..." butonuna tıklandı (hesap arama)');
+                updateAutomationStatus('Step 4: Hesap arama açıldı');
+            });
+
+            // Hesap search input filtering
+            document.getElementById('searchHesapNo').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                filteredHesapData = allHesapData.filter(item => 
+                    item.hesap.toLowerCase().includes(searchTerm) || 
+                    item.aciklama.toLowerCase().includes(searchTerm)
+                );
+                renderHesapList();
+                addLog(`🔍 Hesap arama: "${searchTerm}" - ${filteredHesapData.length} sonuç`);
+            });
+
+            // Account selection and double Tamam
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-item') && e.target.closest('#searchResults')) {
+                    hesapSearchStep = 1;
+                    highlightOCRTarget(e.target);
+                    document.querySelectorAll('#searchResults .search-item').forEach(i => i.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    selectedHesap = e.target.dataset.hesap;
+                    addLog(`✅ STEP 5: Hesap seçildi: ${selectedHesap}`);
+                }
+            });
+
+            document.getElementById('hesapSearchOk').addEventListener('click', function() {
+                if (!selectedHesap) {
+                    alert('Lütfen bir hesap seçin');
+                    return;
+                }
+                
+                hesapSearchStep++;
+                highlightOCRTarget(this);
+                
+                if (hesapSearchStep === 1) {
+                    addLog('✅ STEP 6a: İlk "Tamam" - Hesap onaylandı, ikinci onay bekleniyor');
+                    updateAutomationStatus('Step 6a: İlk Tamam - Onay bekleniyor');
+                    
+                    const confirmDiv = document.createElement('div');
+                    confirmDiv.innerHTML = `
+                        <div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 8px; margin: 8px 0; font-size: 11px;">
+                            ✅ Hesap seçildi: <strong>${selectedHesap}</strong><br>
+                            Onaylamak için tekrar "Tamam" butonuna basın.
+                        </div>
+                    `;
+                    document.querySelector('#hesapSearchModal .dialog-content').appendChild(confirmDiv);
+                    
+                } else if (hesapSearchStep === 2) {
+                    document.getElementById('hesapNoInput').value = selectedHesap;
+                    hideModal('hesapSearchModal');
+                    addLog('✅ STEP 6b: İkinci "Tamam" - Hesap final onaylandı ve modal kapatıldı');
+                    updateAutomationStatus('Step 6b: Hesap seçimi tamamlandı');
+                    hesapSearchStep = 0;
+                }
+            });
+
+            // Date filling and refresh
+            document.getElementById('baslangicTarih').addEventListener('change', function() {
+                if (this.value) {
+                    document.getElementById('bitisTarih').value = this.value;
+                    addLog(`📅 Tarih dolduruldu: ${this.value}`);
+                }
+            });
+
+            document.getElementById('yenileBtn').addEventListener('click', function() {
+                workflowStep = 7;
+                highlightOCRTarget(this);
+                const hesapNo = document.getElementById('hesapNoInput').value;
+                const baslangic = document.getElementById('baslangicTarih').value;
+                const bitis = document.getElementById('bitisTarih').value;
+
+                if (!hesapNo || !baslangic || !bitis) {
+                    alert('Lütfen hesap no ve tarihleri doldurun');
+                    return;
+                }
+
+                this.style.background = '#0066cc';
+                setTimeout(() => this.style.background = '#0078d4', 500);
+                
+                addLog('✅ STEP 7: "Yenile" butonu tıklandı');
+                updateAutomationStatus('Step 7: Veriler yenileniyor...');
+                
+                setTimeout(() => {
+                    displayAccountData(hesapNo, baslangic, bitis);
+                    addLog('✅ Hesap hareketleri yüklendi');
+                    updateAutomationStatus('Step 7: Veriler hazır');
+                }, 1500);
+            });
+
+            // Step 8: Yeni button
+            document.getElementById('yeniBtn').addEventListener('click', function() {
+                workflowStep = 8;
+                highlightOCRTarget(this);
+                const hesapNo = document.getElementById('hesapNoInput').value;
+                if (!hesapNo) {
+                    alert('Önce hesap seçin ve yenile butonuna basın');
+                    return;
+                }
+                this.style.background = '#7ee87e';
+                setTimeout(() => this.style.background = '#90ee90', 500);
+                showModal('yeniIslemModal');
+                addLog('✅ STEP 8: "Yeni" buton tıklandı');
+                updateAutomationStatus('Step 8: İşlem türü seçiliyor...');
+            });
+
+            // Step 9: Transaction type selection
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('transaction-type')) {
+                    document.querySelectorAll('.transaction-type').forEach(t => t.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    
+                    const action = e.target.dataset.action;
+                    if (action === 'havale-alma') {
+                        workflowStep = 9;
+                        highlightOCRTarget(e.target);
+                        hideModal('yeniIslemModal');
+                        showModal('havaleAlmaModal');
+                        
+                        const baslangicTarih = document.getElementById('baslangicTarih').value;
+                        if (baslangicTarih) {
+                            document.getElementById('havaleBelgeTarihi').value = baslangicTarih;
+                            document.getElementById('havaleValorTarihi').value = baslangicTarih;
+                            addLog(`📅 Tarihler senkronize edildi: ${baslangicTarih}`);
+                        } else {
+                            const today = new Date().toISOString().split('T')[0];
+                            document.getElementById('havaleBelgeTarihi').value = today;
+                            document.getElementById('havaleValorTarihi').value = today;
+                        }
+                        
+                        document.getElementById('havaleBelgeNo').value = currentBelgeNo;
+                        addLog('✅ STEP 9: "Havale alma" seçildi');
+                        updateAutomationStatus('Step 9: Havale formu açıldı');
+                    }
+                }
+            });
+
+            // Step 10: New document number
+            document.getElementById('yeniHavaleBtn').addEventListener('click', function() {
+                workflowStep = 10;
+                highlightOCRTarget(this);
+                currentBelgeNo++;
+                document.getElementById('havaleBelgeNo').value = currentBelgeNo;
+                this.style.background = '#7ee87e';
+                setTimeout(() => this.style.background = '#90ee90', 500);
+                addLog(`✅ STEP 10: "Yeni" buton tıklandı - Belge no: ${currentBelgeNo}`);
+                updateAutomationStatus('Step 10: Yeni belge no oluşturuldu');
+            });
+
+            // Form field validations and logging
+            document.getElementById('havaleBelgeTarihi').addEventListener('change', function() {
+                if (this.value && workflowStep >= 10) {
+                    addLog(`📅 STEP 11: Belge Tarihi girildi: ${this.value}`);
+                }
+            });
+
+            document.getElementById('havaleValorTarihi').addEventListener('change', function() {
+                if (this.value && workflowStep >= 10) {
+                    addLog(`📅 STEP 11b: Valör Tarihi girildi: ${this.value}`);
+                }
+            });
+
+            // Bank search
+            document.getElementById('bankaSearchBtn').addEventListener('click', function() {
+                showModal('bankaSearchModal');
+                addLog('🏦 Banka kodu arama açıldı');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-item') && e.target.closest('#bankaSearchResults')) {
+                    document.querySelectorAll('#bankaSearchResults .search-item').forEach(i => i.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    selectedBanka = e.target.dataset.banka;
+                }
+            });
+
+            document.getElementById('bankaSearchOk').addEventListener('click', function() {
+                if (!selectedBanka) {
+                    alert('Lütfen bir banka seçin');
+                    return;
+                }
+                document.getElementById('havaleBanka').value = selectedBanka;
+                hideModal('bankaSearchModal');
+                addLog(`🏦 STEP 12: Banka kodu seçildi: ${selectedBanka}`);
+            });
+
+            // Client search
+            document.getElementById('cariSearchBtn').addEventListener('click', function() {
+                showModal('cariSearchModal');
+                addLog('👤 Cari kodu arama açıldı');
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-item') && e.target.closest('#cariSearchResults')) {
+                    document.querySelectorAll('#cariSearchResults .search-item').forEach(i => i.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    selectedCari = e.target.dataset.cari;
+                }
+            });
+
+            document.getElementById('cariSearchOk').addEventListener('click', function() {
+                if (!selectedCari) {
+                    alert('Lütfen bir cari seçin');
+                    return;
+                }
+                document.getElementById('havaleCari').value = selectedCari;
+                hideModal('cariSearchModal');
+                addLog(`👤 STEP 13: Cari kodu seçildi: ${selectedCari}`);
+            });
+
+            // Manual field entry validation
+            document.getElementById('havaleBanka').addEventListener('input', function() {
+                if (this.value && workflowStep >= 10) {
+                    const validBanks = ['001', '010', '012', '062'];
+                    if (!validBanks.includes(this.value)) {
+                        this.style.background = '#ffe6e6';
+                        addLog(`⚠️ STEP 12: Geçersiz banka kodu: ${this.value}`);
+                    } else {
+                        this.style.background = 'white';
+                        addLog(`🏦 STEP 12: Banka kodu girildi: ${this.value}`);
+                    }
+                }
+            });
+
+            document.getElementById('havaleCari').addEventListener('input', function() {
+                if (this.value && workflowStep >= 10) {
+                    if (this.value.length < 5) {
+                        this.style.background = '#ffe6e6';
+                        addLog(`⚠️ STEP 13: Eksik cari kodu: ${this.value}`);
+                    } else {
+                        this.style.background = 'white';
+                        addLog(`👤 STEP 13: Cari kodu girildi: ${this.value}`);
+                    }
+                }
+            });
+
+            document.getElementById('havaleTutar').addEventListener('input', function() {
+                if (this.value && workflowStep >= 10) {
+                    addLog(`💰 STEP 14: Tutar girildi: ${this.value}`);
+                }
+            });
+
+            document.getElementById('havaleAciklama').addEventListener('input', function() {
+                if (this.value && workflowStep >= 10) {
+                    addLog(`📝 STEP 15: Açıklama girildi: ${this.value}`);
+                }
+            });
+
+            // Step 16: Save transaction
+            document.getElementById('havaleKaydet').addEventListener('click', function() {
+                workflowStep = 16;
+                highlightOCRTarget(this);
+                const banka = document.getElementById('havaleBanka').value;
+                const cari = document.getElementById('havaleCari').value;
+                const tutar = document.getElementById('havaleTutar').value;
+                const aciklama = document.getElementById('havaleAciklama').value;
+
+                if (!banka || !cari || !tutar || !aciklama) {
+                    alert('Lütfen tüm alanları doldurun');
+                    return;
+                }
+
+                this.style.background = '#228b22';
+                setTimeout(() => this.style.background = '#ece9d8', 500);
+                
+                addLog('✅ STEP 16: "Kaydet" butonuna tıklandı');
+                updateAutomationStatus('Step 16: Kaydediliyor...');
+                
+                setTimeout(() => {
+                    addLog('💾 Havale başarıyla kaydedildi!');
+                    updateIslemGecmisi(banka, cari, tutar, aciklama);
+                    clearHavaleForm();
+                    updateAutomationStatus('Step 16: Kaydet tamamlandı');
+                }, 1500);
+            });
+
+            // Step 17: Close transaction
+            document.getElementById('havaleKapat').addEventListener('click', function() {
+                workflowStep = 17;
+                highlightOCRTarget(this);
+                hideModal('havaleAlmaModal');
+                addLog('✅ STEP 17: "Kapat" butonuna tıklandı - Workflow tamamlandı! 🎉');
+                updateAutomationStatus('Workflow Tamamlandı! ✅');
+                
+                setTimeout(() => {
+                    workflowStep = 0;
+                    updateAutomationStatus('Hazır - Yeni workflow için bekliyor');
+                }, 2000);
+            });
+
+            // Cancel buttons
+            document.getElementById('hesapSearchCancel').addEventListener('click', function() {
+                hideModal('hesapSearchModal');
+                addLog('❌ Hesap arama iptal edildi');
+            });
+
+            document.getElementById('yeniIslemCancel').addEventListener('click', function() {
+                hideModal('yeniIslemModal');
+                addLog('❌ Yeni işlem modal iptal edildi');
+            });
+
+            document.getElementById('bankaSearchCancel').addEventListener('click', function() {
+                hideModal('bankaSearchModal');
+                addLog('❌ Banka arama iptal edildi');
+            });
+
+            document.getElementById('cariSearchCancel').addEventListener('click', function() {
+                hideModal('cariSearchModal');
+                addLog('❌ Cari arama iptal edildi');
+            });
+
+            // Click outside to close dropdowns
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.menu-item')) {
+                    hideAllDropdowns();
+                }
+            });
+        }
+
+        // Utility functions
+        function highlightOCRTarget(element) {
+            document.querySelectorAll('.ocr-target').forEach(el => {
+                el.style.outline = 'none';
+            });
+            
+            element.style.outline = '2px solid #ff6600';
+            element.style.outlineOffset = '2px';
+            
+            setTimeout(() => {
+                element.style.outline = 'none';
+            }, 2000);
+        }
+
+        function renderHesapList() {
+            const searchResults = document.getElementById('searchResults');
+            searchResults.innerHTML = '';
+            
+            filteredHesapData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'search-item ocr-target';
+                div.setAttribute('data-hesap', item.hesap);
+                div.setAttribute('data-aciklama', item.aciklama);
+                div.innerHTML = `<strong>${item.hesap}</strong> - ${item.aciklama}`;
+                searchResults.appendChild(div);
+            });
+            
+            if (filteredHesapData.length === 0) {
+                searchResults.innerHTML = '<div style="padding: 8px; color: #666; text-align: center; font-size: 11px;">Sonuç bulunamadı</div>';
+            }
+        }
+
+        function displayAccountData(hesapNo, startDate, endDate) {
+            const workArea = document.getElementById('workArea');
+            workArea.innerHTML = `
+                <h3 style="margin-bottom: 15px; color: #333; font-size: 13px;">Hesap Hareketleri</h3>
+                <div style="background: #f0f0f0; padding: 8px; border: 1px inset #ece9d8; margin-bottom: 15px; font-size: 11px;">
+                    <strong>Hesap:</strong> ${hesapNo} | 
+                    <strong>Tarih:</strong> ${startDate} - ${endDate}
+                </div>
+                <table class="data-grid">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>İşlem</th>
+                            <th>Açıklama</th>
+                            <th>Gelen</th>
+                            <th>Giden</th>
+                            <th>Bakiye</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${startDate}</td>
+                            <td>Transfer</td>
+                            <td>Açılış Bakiyesi</td>
+                            <td>125.450,75</td>
+                            <td>-</td>
+                            <td>125.450,75</td>
+                        </tr>
+                        <tr>
+                            <td>${startDate}</td>
+                            <td>EFT</td>
+                            <td>Müşteri Ödemesi</td>
+                            <td>3.250,00</td>
+                            <td>-</td>
+                            <td>128.700,75</td>
+                        </tr>
+                        <tr>
+                            <td>${startDate}</td>
+                            <td>Havale</td>
+                            <td>Tedarikçi Ödemesi</td>
+                            <td>-</td>
+                            <td>2.150,50</td>
+                            <td>126.550,25</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="margin-top: 20px; padding: 12px; background: #e8f5e8; border: 1px solid #4caf50; font-size: 11px;">
+                    <strong>✅ Hesap hareketleri yüklendi!</strong><br>
+                    "Yeni" butonunu kullanarak yeni işlem ekleyebilirsiniz.
+                </div>
+            `;
+        }
+
+        function updateIslemGecmisi(banka, cari, tutar, aciklama) {
+            const gecmisDiv = document.getElementById('islemGecmisi');
+            const timestamp = new Date().toLocaleTimeString('tr-TR');
+            const yeniIslem = `
+                <div style="border-bottom: 1px solid #ddd; padding: 4px 0; margin-bottom: 4px; font-size: 10px;">
+                    <div style="font-weight: bold; color: #228b22;">${timestamp}</div>
+                    <div>Havale: ${tutar} TL</div>
+                    <div style="font-size: 9px; color: #666;">${aciklama}</div>
+                </div>
+            `;
+            
+            if (gecmisDiv.textContent.includes('Henüz işlem yok')) {
+                gecmisDiv.innerHTML = yeniIslem;
+            } else {
+                gecmisDiv.innerHTML = yeniIslem + gecmisDiv.innerHTML;
+            }
+        }
+
+        function clearHavaleForm() {
+            document.getElementById('havaleBanka').value = '';
+            document.getElementById('havaleCari').value = '';
+            document.getElementById('havaleTutar').value = '';
+            document.getElementById('havaleAciklama').value = '';
+            
+            document.getElementById('havaleBanka').style.background = 'white';
+            document.getElementById('havaleCari').style.background = 'white';
+        }
+
+        function showDropdown(id) {
+            hideAllDropdowns();
+            const dropdown = document.getElementById(id);
+            dropdown.style.display = 'block';
+        }
+
+        function hideAllDropdowns() {
+            document.querySelectorAll('.dropdown').forEach(d => d.style.display = 'none');
+        }
+
+        function showModal(id) {
+            document.getElementById(id).style.display = 'flex';
+        }
+
+        function hideModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        function addLog(message) {
+            // Simple console logging for now
+            console.log(`[${new Date().toLocaleTimeString('tr-TR')}] ${message}`);
+        }
+
+        function updateAutomationStatus(status) {
+            document.getElementById('automationStatus').textContent = `RPA: ${status}`;
+        }
+
+        // Expose API for automation testing
+        window.prestonAPI = {
+            // 17-Step Workflow Functions
+            step1_clickFinansIzle: () => document.getElementById('finansIzleMenu').click(),
+            step2_selectBankaHesapIzleme: () => document.querySelector('[data-action="banka-hesap-izleme"]').click(),
+            step3_clickBankaToolbar: () => document.getElementById('bankaToolbarIcon').click(),
+            step4_clickHesapSearch: () => document.getElementById('hesapSearchBtn').click(),
+            step5_selectHesap: (hesapNo) => {
+                const item = document.querySelector(`[data-hesap="${hesapNo}"]`);
+                if (item) item.click();
+            },
+            step6a_clickFirstTamam: () => document.getElementById('hesapSearchOk').click(),
+            step6b_clickSecondTamam: () => document.getElementById('hesapSearchOk').click(),
+            step7_fillDatesAndRefresh: (date) => {
+                document.getElementById('baslangicTarih').value = date;
+                document.getElementById('bitisTarih').value = date;
+                document.getElementById('yenileBtn').click();
+            },
+            step8_clickYeni: () => document.getElementById('yeniBtn').click(),
+            step9_selectHavaleAlma: () => document.querySelector('[data-action="havale-alma"]').click(),
+            step10_clickYeniHavale: () => document.getElementById('yeniHavaleBtn').click(),
+            step11_fillBelgeTarih: (date) => document.getElementById('havaleBelgeTarihi').value = date,
+            step11b_fillValorTarih: (date) => document.getElementById('havaleValorTarihi').value = date,
+            step12_fillBanka: (banka) => document.getElementById('havaleBanka').value = banka,
+            step12_selectBanka: (bankaKodu) => {
+                document.getElementById('bankaSearchBtn').click();
+                setTimeout(() => {
+                    const item = document.querySelector(`[data-banka="${bankaKodu}"]`);
+                    if (item) {
+                        item.click();
+                        document.getElementById('bankaSearchOk').click();
+                    }
+                }, 100);
+            },
+            step13_fillCari: (cari) => document.getElementById('havaleCari').value = cari,
+            step13_selectCari: (cariKodu) => {
+                document.getElementById('cariSearchBtn').click();
+                setTimeout(() => {
+                    const item = document.querySelector(`[data-cari="${cariKodu}"]`);
+                    if (item) {
+                        item.click();
+                        document.getElementById('cariSearchOk').click();
+                    }
+                }, 100);
+            },
+            step14_fillTutar: (tutar) => document.getElementById('havaleTutar').value = tutar,
+            step15_fillAciklama: (aciklama) => document.getElementById('havaleAciklama').value = aciklama,
+            step16_clickKaydet: () => document.getElementById('havaleKaydet').click(),
+            step17_clickKapat: () => document.getElementById('havaleKapat').click(),
+            
+            // Utility functions
+            getCurrentStep: () => workflowStep,
+            getHesapSearchStep: () => hesapSearchStep,
+            
+            // OCR Testing functions
+            getOCRTargets: () => {
+                const targets = [];
+                document.querySelectorAll('.ocr-target').forEach(el => {
+                    targets.push({
+                        id: el.getAttribute('data-ocr-id'),
+                        text: el.getAttribute('data-ocr') || el.textContent.trim() || el.placeholder || el.value || el.title,
+                        tagName: el.tagName,
+                        className: el.className,
+                        visible: !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none'
+                    });
+                });
+                return targets;
+            },
+            
+            // Full workflow automation
+            runFullWorkflow: async (hesapNo = '6293986', tutar = '1250.75') => {
+                console.log('🤖 Full workflow automation başlatıldı...');
+                const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+                
+                try {
+                    await delay(500);
+                    window.prestonAPI.step1_clickFinansIzle();
+                    await delay(500);
+                    window.prestonAPI.step2_selectBankaHesapIzleme();
+                    await delay(500);
+                    window.prestonAPI.step3_clickBankaToolbar();
+                    await delay(500);
+                    window.prestonAPI.step4_clickHesapSearch();
+                    await delay(500);
+                    window.prestonAPI.step5_selectHesap(hesapNo);
+                    await delay(500);
+                    window.prestonAPI.step6a_clickFirstTamam();
+                    await delay(500);
+                    window.prestonAPI.step6b_clickSecondTamam();
+                    await delay(500);
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    window.prestonAPI.step7_fillDatesAndRefresh(today);
+                    await delay(2000);
+                    
+                    window.prestonAPI.step8_clickYeni();
+                    await delay(500);
+                    window.prestonAPI.step9_selectHavaleAlma();
+                    await delay(500);
+                    window.prestonAPI.step10_clickYeniHavale();
+                    await delay(500);
+                    window.prestonAPI.step11_fillBelgeTarih(today);
+                    window.prestonAPI.step11b_fillValorTarih(today);
+                    window.prestonAPI.step12_fillBanka('062');
+                    window.prestonAPI.step13_fillCari('120.12.001');
+                    window.prestonAPI.step14_fillTutar(tutar);
+                    window.prestonAPI.step15_fillAciklama('RPA Auto Test');
+                    await delay(500);
+                    window.prestonAPI.step16_clickKaydet();
+                    await delay(2000);
+                    window.prestonAPI.step17_clickKapat();
+                    
+                    console.log('🎉 Full workflow automation tamamlandı!');
+                    return true;
+                } catch (error) {
+                    console.log(`❌ Workflow error: ${error.message}`);
+                    return false;
+                }
+            }
+        };
+
+        // Initialize demo mode
+        setTimeout(() => {
+            console.log('🎯 Realistic Preston 17-Step Workflow Simulator Ready!');
+            console.log('📋 OCR Test: console.log(prestonAPI.getOCRTargets())');
+            console.log('🤖 Auto: prestonAPI.runFullWorkflow()');
+            console.log('📊 Available OCR Targets:', window.prestonAPI.getOCRTargets().length);
+            console.log('Classic Windows UI simulation active');
+        }, 1000);
+    </script>
+</body>
+</html>
