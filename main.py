@@ -5,6 +5,7 @@ from __future__ import annotations
 import io
 import threading
 import time
+import webbrowser
 from queue import Queue
 from pathlib import Path
 from typing import List, Dict
@@ -14,31 +15,36 @@ import streamlit as st
 if __package__ in (None, ""):
     import sys
     sys.path.append(str(Path(__file__).resolve().parent.parent))
-    from preston_rpa.excel_processor import process_excel_file
-    from preston_rpa.preston_automation import PrestonRPA, focus_preston_window
+    from preston_rpa.excel_processor import process_excel_to_coordinates
+    from preston_rpa.preston_automation_v2 import PrestonRPAV2
     from preston_rpa.logger import get_logger
 else:
-    from .excel_processor import process_excel_file
-    from .preston_automation import PrestonRPA, focus_preston_window
+    from .excel_processor import process_excel_to_coordinates
+    from .preston_automation_v2 import PrestonRPAV2
     from .logger import get_logger
 
 logger = get_logger(__name__)
 
 
-def run_automation(data: List[Dict[str, object]], simulator_path: str, progress_queue: Queue):
-    rpa = PrestonRPA()
+def focus_preston_window(simulator_path: str) -> None:
+    """Open or focus the Preston V2 simulator window."""
+    webbrowser.open(Path(simulator_path).resolve().as_uri())
+    time.sleep(1)
+
+
+def run_automation(data: List[Dict[str, str]], simulator_path: str, progress_queue: Queue):
+    rpa = PrestonRPAV2()
     total = len(data)
     try:
         for idx, entry in enumerate(data, start=1):
-            if not rpa.running:
+            success = rpa.execute_real_workflow(entry)
+            if not success:
                 break
-            rpa.execute_workflow(entry)
             progress_queue.put(idx / total)
     except Exception as exc:
         logger.exception("Automation failed: %s", exc)
         progress_queue.put(("error", str(exc)))
     finally:
-        rpa.stop()
         progress_queue.put(1.0)
 
 
@@ -49,7 +55,9 @@ def main():
     with st.sidebar:
         st.header("Configuration")
         uploaded_file = st.file_uploader("Excel file", type=["xls", "xlsx"])
-        simulator_path = st.text_input("Simulator Path", value=str(Path(__file__).parent / "Preston.html"))
+        simulator_path = st.text_input(
+            "Simulator Path", value=str(Path(__file__).parent / "preston2.html")
+        )
         start_button = st.button("Start RPA", type="primary")
 
     log_box = st.empty()
@@ -59,7 +67,7 @@ def main():
         with io.BytesIO(uploaded_file.read()) as buffer:
             excel_path = Path("uploaded.xlsx")
             excel_path.write_bytes(buffer.getvalue())
-            data = process_excel_file(excel_path)
+            data = process_excel_to_coordinates(excel_path)
         focus_preston_window(simulator_path)
         progress_queue: Queue = Queue()
         thread = threading.Thread(
