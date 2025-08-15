@@ -86,15 +86,22 @@ def process_excel_file(file_path: Path | str) -> List[Dict[str, object]]:
     return results
 
 
-def process_excel_to_coordinates() -> List[Dict[str, str]]:
-    """Return records formatted for coordinate-based automation."""
+def convert_to_coordinate_format(excel_data: List[Dict[str, object]]) -> List[Dict[str, str]]:
+    """Convert processed Excel data to coordinate automation format."""
     return [
         {
-            "hesap_no": "6293986",
-            "tarih": "25.07.2025",
-            "banka_kodu": "062",
-            "cari_kodu": "120.12.001",
-            "tutar": "1250.75",
-            "aciklama": "POS Tahsilatı",
+            "hesap_no": item["hesap_no"],
+            "tarih": item["tarih"],
+            "banka_kodu": "062",  # Default bank code
+            "cari_kodu": "120.12.001",  # Default client code
+            "tutar": str(item["toplam_tutar"]),
+            "aciklama": item["aciklama"],
         }
+        for item in excel_data
     ]
+
+
+def process_excel_to_coordinates(file_path: Path | str) -> List[Dict[str, str]]:
+    """Load Excel and return records formatted for coordinate-based automation."""
+    excel_data = process_excel_file(file_path)
+    return convert_to_coordinate_format(excel_data)
