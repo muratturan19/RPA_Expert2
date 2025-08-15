@@ -34,9 +34,25 @@ class PrestonRPAV2:
             "yeni_belge_btn": (760, 383),
         }
 
+    def dismiss_alerts(self) -> None:
+        """Attempt to close any blocking JavaScript alerts."""
+        try:
+            pyautogui.press("esc")
+            time.sleep(0.5)
+            pyautogui.press("enter")
+            time.sleep(0.5)
+            pyautogui.press("tab")
+            pyautogui.press("enter")
+            time.sleep(0.5)
+        except Exception:
+            pass
+
     def execute_real_workflow(self, excel_data: dict[str, str]) -> bool:
         """Execute steps 4-17 using values from Excel data."""
         try:
+            # Clear potential blocking alerts
+            self.dismiss_alerts()
+
             # Step 4: Click hesap search
             pyautogui.click(*self.coordinates["hesap_search"])
             time.sleep(1)
