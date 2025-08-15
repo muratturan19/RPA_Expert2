@@ -10,7 +10,13 @@ from typing import Dict, List
 
 from openpyxl import load_workbook
 
-from .logger import get_logger
+# ``excel_processor`` may be executed as a standalone module.  Attempt a
+# relative import first but fall back to an absolute import when the package
+# structure is not available.
+try:  # pragma: no cover - import behaviour
+    from .logger import get_logger
+except ImportError:  # pragma: no cover - executed when run as a script
+    from logger import get_logger
 
 logger = get_logger(__name__)
 

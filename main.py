@@ -12,16 +12,13 @@ from typing import List, Dict
 
 import streamlit as st
 
-if __package__ in (None, ""):
-    import sys
-    sys.path.append(str(Path(__file__).resolve().parent.parent))
-    from preston_rpa.excel_processor import process_excel_to_coordinates
-    from preston_rpa.preston_automation_v2 import PrestonRPAV2
-    from preston_rpa.logger import get_logger
-else:
-    from .excel_processor import process_excel_to_coordinates
-    from .preston_automation_v2 import PrestonRPAV2
-    from .logger import get_logger
+# The project does not ship as an installable package, so imports need to work
+# when executed directly (e.g. ``streamlit run main.py``).  Using absolute
+# imports keeps things simple and avoids ``ModuleNotFoundError`` when the
+# package name ``preston_rpa`` is unavailable.
+from excel_processor import process_excel_to_coordinates
+from logger import get_logger
+from src.preston_automation_v2 import PrestonRPAV2
 
 logger = get_logger(__name__)
 
