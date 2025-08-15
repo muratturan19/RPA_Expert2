@@ -25,6 +25,13 @@ class PrestonRPAV2:
             "havale_alma": (848, 566),
             "banka_field": (848, 629),
             "cari_field": (848, 661),
+            "save_button": (930, 615),
+            "close_button": (883, 615),
+            "belge_tarih": (611, 462),
+            "valor_tarih": (866, 462),
+            "tutar_field": (635, 509),
+            "aciklama_field": (635, 533),
+            "yeni_belge_btn": (760, 383),
         }
 
     def execute_real_workflow(self, excel_data: dict[str, str]) -> bool:
@@ -79,6 +86,18 @@ class PrestonRPAV2:
 
     def fill_transaction_form(self, data: dict[str, str]) -> None:
         """Fill transaction form fields using Excel data."""
+        # Step 10: Click Yeni belge
+        pyautogui.click(*self.coordinates["yeni_belge_btn"])
+        time.sleep(0.5)
+
+        # Step 11a: Belge tarihi
+        pyautogui.click(*self.coordinates["belge_tarih"])
+        pyautogui.typewrite(data["tarih"])
+
+        # Step 11b: Valör tarihi
+        pyautogui.click(*self.coordinates["valor_tarih"])
+        pyautogui.typewrite(data["tarih"])
+
         # Step 12: Banka kodu
         pyautogui.click(*self.coordinates["banka_field"])
         pyautogui.typewrite(data["banka_kodu"])
@@ -87,18 +106,18 @@ class PrestonRPAV2:
         pyautogui.click(*self.coordinates["cari_field"])
         pyautogui.typewrite(data["cari_kodu"])
 
-        # Step 14: Tutar (use Tab navigation)
-        pyautogui.press("tab")
+        # Step 14: Tutar input
+        pyautogui.click(*self.coordinates["tutar_field"])
         pyautogui.typewrite(data["tutar"])
 
         # Step 15: Açıklama
-        pyautogui.press("tab")
+        pyautogui.click(*self.coordinates["aciklama_field"])
         pyautogui.typewrite(data["aciklama"])
 
     def click_save(self) -> None:
         """Trigger save action."""
-        pyautogui.hotkey("ctrl", "s")
+        pyautogui.click(*self.coordinates["save_button"])
 
     def click_close(self) -> None:
         """Close the current window."""
-        pyautogui.hotkey("alt", "f4")
+        pyautogui.click(*self.coordinates["close_button"])
