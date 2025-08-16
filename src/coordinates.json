@@ -7,12 +7,12 @@
   "yenile_btn": [48, 399],
   "yeni_btn": [223, 448],
   "havale_alma": [955, 566],
-  "banka_input": [629, 277],
-  "cari_input": [629, 309],
-  "belge_tarih_field": [629, 442],
-  "valor_tarih_field": [873, 442],
-  "tutar_input": [629, 514],
-  "aciklama_input": [629, 538],
-  "kaydet_btn": [919, 589],
-  "kapat_btn": [840, 589]
+  "banka_input": [848, 629],
+  "cari_input": [848, 661],
+  "belge_tarih_field": [650, 460],
+  "valor_tarih_field": [880, 460],
+  "tutar_input": [848, 694],
+  "aciklama_input": [650, 550],
+  "kaydet_btn": [970, 620],
+  "kapat_btn": [890, 620]
 }

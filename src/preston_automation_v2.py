@@ -62,14 +62,14 @@ class PrestonRPAV2:
             "havale_alma": (955, 566),  # ✅ Gerçek "Havale alma" koordinatı
 
             # ✅ YENİ - Direkt input field'lar:
-            "banka_input": (629, 277),        # Banka input field (062 yazan yer)
-            "cari_input": (629, 309),         # Cari input field (120. yazan yer)
-            "belge_tarih_field": (629, 442),  # Belge Tarihi
-            "valor_tarih_field": (873, 442),  # Valör Tarihi
-            "tutar_input": (629, 514),        # Tutar
-            "aciklama_input": (629, 538),     # Açıklama
-            "kaydet_btn": (919, 589),         # Kaydet
-            "kapat_btn": (840, 589),          # Kapat
+            "banka_input": (848, 629),        # Banka input field (062 yazan yer)
+            "cari_input": (848, 661),         # Cari input field (120. yazan yer)
+            "belge_tarih_field": (650, 460),  # Belge Tarihi
+            "valor_tarih_field": (880, 460),  # Valör Tarihi
+            "tutar_input": (848, 694),        # Tutar
+            "aciklama_input": (650, 550),     # Açıklama
+            "kaydet_btn": (970, 620),         # Kaydet
+            "kapat_btn": (890, 620),          # Kapat
         }
 
     def calibrate_coordinate(self, key: str, path: str | Path | None = None) -> tuple[int, int]:
