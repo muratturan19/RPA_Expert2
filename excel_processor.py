@@ -54,9 +54,9 @@ def process_excel_file(file_path: Path | str) -> List[Dict[str, object]]:
     wb = load_workbook(file_path, data_only=True)
     ws = wb.active
 
-    account_no = ws["B6"].value
+    account_no = ws["B7"].value  # Hesap numarası
     if not account_no:
-        raise ValueError("Account number (B6) not found in Excel file")
+        raise ValueError("Account number (B7) not found in Excel file")
 
     groups: Dict[str, Dict[str, object]] = defaultdict(lambda: {"toplam_tutar": 0, "islem_sayisi": 0})
 
