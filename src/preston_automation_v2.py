@@ -138,7 +138,7 @@ class PrestonRPAV2:
             logger.debug("Step 4 completed")
 
             logger.debug("Step 5: enter hesap no")
-            pyautogui.click(*self.coordinates["hesap_input"])
+            pyautogui.click(*self.coordinates["hesap_input"], clicks=3)
             pyautogui.typewrite(excel_data["hesap_no"])  # Excel'den tam hesap no
             time.sleep(1.5)  # Filter'ın çalışmasını bekle
             logger.debug("Step 5 completed")
@@ -159,7 +159,7 @@ class PrestonRPAV2:
             logger.debug("Step 7b completed")
 
             logger.debug("Step 8: fill date")
-            pyautogui.click(*self.coordinates["date_input"])
+            pyautogui.click(*self.coordinates["date_input"], clicks=3)
             pyautogui.typewrite(excel_data["tarih"])
             time.sleep(0.5)
             logger.debug("Step 8 completed")
@@ -199,37 +199,37 @@ class PrestonRPAV2:
         """Fill transaction form fields using Excel data."""
 
         logger.debug("Step 12: enter banka kodu")
-        pyautogui.click(*self.coordinates["banka_input"])
+        pyautogui.click(*self.coordinates["banka_input"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["banka_kodu"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 13: enter cari kodu")
-        pyautogui.click(*self.coordinates["cari_input"])
+        pyautogui.click(*self.coordinates["cari_input"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["cari_kodu"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 14: enter belge tarihi")
-        pyautogui.click(*self.coordinates["belge_tarih_field"])
+        pyautogui.click(*self.coordinates["belge_tarih_field"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tarih"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 15: enter valör tarihi")
-        pyautogui.click(*self.coordinates["valor_tarih_field"])
+        pyautogui.click(*self.coordinates["valor_tarih_field"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tarih"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 16: enter tutar")
-        pyautogui.click(*self.coordinates["tutar_input"])
+        pyautogui.click(*self.coordinates["tutar_input"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tutar"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 17: enter açıklama")
-        pyautogui.click(*self.coordinates["aciklama_input"])
+        pyautogui.click(*self.coordinates["aciklama_input"], clicks=3)
         time.sleep(FORM_FILL_DELAY)
         text = data.get("aciklama", "").strip()
         if not text:
