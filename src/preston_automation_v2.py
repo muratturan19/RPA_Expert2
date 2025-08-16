@@ -55,13 +55,19 @@ class PrestonRPAV2:
 
             # Step 4: Click hesap search
             pyautogui.click(*self.coordinates["hesap_search"])
-            time.sleep(1)
+            time.sleep(2)  # Modal açılmasını bekle
 
-            # Step 5: Select account
-            pyautogui.click(*self.coordinates["account_item"])
-            time.sleep(0.5)
+            # Step 5: Select account and verify highlight
+            acc_x, acc_y = self.coordinates["account_item"]
+            before_color = pyautogui.screenshot().getpixel((acc_x, acc_y))
+            pyautogui.click(acc_x, acc_y)
+            time.sleep(1)  # Seçim işlemini bekle
+            after_color = pyautogui.screenshot().getpixel((acc_x, acc_y))
+            if after_color == before_color:
+                self.dismiss_alerts()
+                raise RuntimeError("Account selection failed")
 
-            # Step 6a: First Tamam
+            # Step 6a: First Tamam (only after a valid selection)
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(0.5)
 
