@@ -231,7 +231,10 @@ class PrestonRPAV2:
         logger.debug("Step 17: enter açıklama")
         pyautogui.click(*self.coordinates["aciklama_input"])
         time.sleep(FORM_FILL_DELAY)
-        text = data.get("aciklama", "")
+        text = data.get("aciklama", "").strip()
+        if not text:
+            text = "Havale alma işlemi"
+            logger.debug("Açıklama boş, default değer kullanılıyor")
         pyperclip.copy(text)
         pyautogui.hotkey("ctrl", "v")
         time.sleep(FORM_FILL_DELAY)
