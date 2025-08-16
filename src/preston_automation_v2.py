@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pyautogui
 
+from config import FORM_FILL_DELAY
 from logger import get_logger
 
 logger = get_logger(__name__)
@@ -174,8 +175,8 @@ class PrestonRPAV2:
 
             logger.debug("Step 11: select Havale alma")
             pyautogui.click(*self.coordinates["havale_alma"])
-            time.sleep(1)
-            logger.debug("Step 11 completed")
+            time.sleep(FORM_FILL_DELAY * 2)
+            logger.debug("Step 11 completed - modal opened")
 
             logger.debug("Steps 12-17: fill transaction form")
             self.fill_transaction_form(excel_data)
@@ -196,48 +197,50 @@ class PrestonRPAV2:
     def fill_transaction_form(self, data: dict[str, str]) -> None:
         """Fill transaction form fields using Excel data."""
 
-        # Step 13: Banka kodu - excel'den gelen kodu yaz
+        logger.debug("Step 12: enter banka kodu")
         pyautogui.click(*self.coordinates["banka_input"])
-        time.sleep(0.5)
-        pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
+        time.sleep(FORM_FILL_DELAY)
+        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["banka_kodu"])
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
-        # Step 14: Cari kodu - excel'den gelen kodu yaz
+        logger.debug("Step 13: enter cari kodu")
         pyautogui.click(*self.coordinates["cari_input"])
-        time.sleep(0.5)
-        pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
+        time.sleep(FORM_FILL_DELAY)
+        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["cari_kodu"])
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
-        # Step 15: Belge tarihi
+        logger.debug("Step 14: enter belge tarihi")
         pyautogui.click(*self.coordinates["belge_tarih_field"])
         pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tarih"])
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
-        # Step 16: Valör tarihi
+        logger.debug("Step 15: enter valör tarihi")
         pyautogui.click(*self.coordinates["valor_tarih_field"])
         pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tarih"])
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
-        # Step 17: Tutar
+        logger.debug("Step 16: enter tutar")
         pyautogui.click(*self.coordinates["tutar_input"])
         pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tutar"])
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
-        # Step 18: Açıklama
+        logger.debug("Step 17: enter açıklama")
         pyautogui.click(*self.coordinates["aciklama_input"])
         pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data.get("aciklama", "Test işlemi"))
-        time.sleep(0.5)
+        time.sleep(FORM_FILL_DELAY)
 
     def click_save(self) -> None:
         """Trigger save action."""
+        logger.debug("Clicking Kaydet button")
         pyautogui.click(*self.coordinates["kaydet_btn"])
 
     def click_close(self) -> None:
         """Close the current window."""
+        logger.debug("Clicking Kapat button")
         pyautogui.click(*self.coordinates["kapat_btn"])
