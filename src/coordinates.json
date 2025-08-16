@@ -1,0 +1,18 @@
+{
+  "hesap_search": [290, 305],
+  "hesap_input": [1000, 497],
+  "account_item": [990, 532],
+  "tamam_button": [1163, 820],
+  "date_input": [197, 335],
+  "yenile_btn": [48, 399],
+  "yeni_btn": [223, 448],
+  "havale_alma": [955, 566],
+  "banka_input": [629, 277],
+  "cari_input": [629, 309],
+  "belge_tarih_field": [629, 442],
+  "valor_tarih_field": [873, 442],
+  "tutar_input": [629, 514],
+  "aciklama_input": [629, 538],
+  "kaydet_btn": [919, 589],
+  "kapat_btn": [840, 589]
+}
