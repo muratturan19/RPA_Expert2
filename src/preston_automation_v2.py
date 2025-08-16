@@ -70,8 +70,8 @@ class PrestonRPAV2:
             "valor_tarih_field": (880, 460),  # Valör Tarihi
             "tutar_input": (848, 694),        # Tutar
             "aciklama_input": (650, 550),     # Açıklama
-            "kaydet_btn": (970, 620),         # Kaydet
-            "kapat_btn": (890, 620),          # Kapat
+            "kaydet_btn": (1240, 794),        # Kaydet
+            "kapat_btn": (1134, 794),         # Kapat
         }
 
     def calibrate_coordinate(self, key: str, path: str | Path | None = None) -> tuple[int, int]:
