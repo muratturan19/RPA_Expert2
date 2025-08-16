@@ -15,12 +15,48 @@ from openpyxl import load_workbook
 # structure is not available.
 try:  # pragma: no cover - import behaviour
     from .logger import get_logger
+    from .config import BANK_CODES, CARI_CODES
 except ImportError:  # pragma: no cover - executed when run as a script
     from logger import get_logger
+    from config import BANK_CODES, CARI_CODES
 
 logger = get_logger(__name__)
 
 POSH_PATTERN = re.compile(r"POSH.*\d{5,}$")
+
+
+def lookup_account_codes(account_no: str) -> tuple[str, str]:
+    """Return bank and client codes for the given account number.
+
+    Parameters
+    ----------
+    account_no: str
+        Account number from Excel file.
+
+    Returns
+    -------
+    tuple[str, str]
+        Bank code and cari (client) code.
+
+    Raises
+    ------
+    ValueError
+        If either code cannot be determined.
+    """
+
+    bank_code = BANK_CODES.get(account_no)
+    if not bank_code:
+        msg = f"Bank code not found for account {account_no}"
+        logger.error(msg)
+        raise ValueError(msg)
+
+    cari_code = CARI_CODES.get(account_no) or CARI_CODES.get("default")
+    if not cari_code:
+        msg = f"Cari code not found for account {account_no}"
+        logger.error(msg)
+        raise ValueError(msg)
+
+    return bank_code, cari_code
 
 
 def _parse_date(value) -> str:
@@ -94,17 +130,20 @@ def process_excel_file(file_path: Path | str) -> List[Dict[str, object]]:
 
 def convert_to_coordinate_format(excel_data: List[Dict[str, object]]) -> List[Dict[str, str]]:
     """Convert processed Excel data to coordinate automation format."""
-    return [
-        {
-            "hesap_no": item["hesap_no"],
-            "tarih": item["tarih"],
-            "banka_kodu": "062",  # Default bank code
-            "cari_kodu": "120.12.001",  # Default client code
-            "tutar": str(item["toplam_tutar"]),
-            "aciklama": item["aciklama"],
-        }
-        for item in excel_data
-    ]
+    formatted: List[Dict[str, str]] = []
+    for item in excel_data:
+        bank_code, cari_code = lookup_account_codes(item["hesap_no"])
+        formatted.append(
+            {
+                "hesap_no": item["hesap_no"],
+                "tarih": item["tarih"],
+                "banka_kodu": bank_code,
+                "cari_kodu": cari_code,
+                "tutar": str(item["toplam_tutar"]),
+                "aciklama": item["aciklama"],
+            }
+        )
+    return formatted
 
 
 def process_excel_to_coordinates(file_path: Path | str) -> List[Dict[str, str]]:
