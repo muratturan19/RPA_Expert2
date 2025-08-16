@@ -17,7 +17,8 @@ class PrestonRPAV2:
         return {
             # Real workflow coordinates
             "hesap_search": (290, 305),
-            "account_item": (600, 532),
+            "hesap_input": (1000, 497),
+            "account_item": (690, 432),
             "tamam_button": (1163, 820),
             "date_input": (197, 335),
             "yenile_btn": (48, 399),
@@ -55,50 +56,45 @@ class PrestonRPAV2:
 
             # Step 4: Click hesap search
             pyautogui.click(*self.coordinates["hesap_search"])
-            time.sleep(2)  # Modal açılmasını bekle
+            time.sleep(2)
 
-            # Step 5: Select account and verify highlight
-            acc_x, acc_y = self.coordinates["account_item"]
-            before_color = pyautogui.screenshot().getpixel((acc_x, acc_y))
-            pyautogui.click(acc_x, acc_y)
-            time.sleep(1)  # Seçim işlemini bekle
-            after_color = pyautogui.screenshot().getpixel((acc_x, acc_y))
-            if after_color == before_color:
-                self.dismiss_alerts()
-                raise RuntimeError("Account selection failed")
+            # Step 5: Type hesap number in input field
+            pyautogui.click(*self.coordinates["hesap_input"])
+            pyautogui.typewrite("6293986")
+            time.sleep(1)
 
-            # Step 6a: First Tamam (only after a valid selection)
-            pyautogui.click(*self.coordinates["tamam_button"])
-            time.sleep(0.5)
+            # Step 6: Click first matching item (auto-selected)
+            pyautogui.click(*self.coordinates["account_item"])
+            time.sleep(1)
 
-            # Step 6b: Second Tamam
+            # Step 7: Click Tamam
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(1)
 
-            # Step 7a: Fill date
+            # Step 8: Fill date
             pyautogui.click(*self.coordinates["date_input"])
             pyautogui.typewrite(excel_data["tarih"])
             time.sleep(0.5)
 
-            # Step 7b: Click Yenile
+            # Step 9: Click Yenile
             pyautogui.click(*self.coordinates["yenile_btn"])
             time.sleep(2)
 
-            # Step 8: Click Yeni
+            # Step 10: Click Yeni
             pyautogui.click(*self.coordinates["yeni_btn"])
             time.sleep(1)
 
-            # Step 9: Select Havale alma
+            # Step 11: Select Havale alma
             pyautogui.click(*self.coordinates["havale_alma"])
             time.sleep(1)
 
-            # Steps 10-15: Fill form with Excel data
+            # Steps 12-17: Fill form with Excel data
             self.fill_transaction_form(excel_data)
 
-            # Step 16: Save
+            # Step 18: Save
             self.click_save()
 
-            # Step 17: Close
+            # Step 19: Close
             self.click_close()
 
             return True
