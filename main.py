@@ -36,6 +36,7 @@ def run_automation(data: List[Dict[str, str]], simulator_path: str, progress_que
         for idx, entry in enumerate(data, start=1):
             success = rpa.execute_real_workflow(entry)
             if not success:
+                progress_queue.put(("error", f"Adım {idx} başarısız"))
                 break
             progress_queue.put(idx / total)
     except Exception as exc:
@@ -76,15 +77,15 @@ def main():
         error_message = None
         while thread.is_alive() or not progress_queue.empty():
             try:
-                progress = progress_queue.get(timeout=0.1)
-                if isinstance(progress, tuple) and progress[0] == "error":
-                    error_message = progress[1]
-                    st.error(error_message)
-                    break
-                else:
-                    progress_placeholder.progress(progress)
+                message = progress_queue.get(timeout=0.1)
             except Exception:
-                pass
+                time.sleep(0.1)
+                continue
+            if isinstance(message, tuple) and message[0] == "error":
+                error_message = message[1]
+                st.error(error_message)
+                break
+            progress_placeholder.progress(message)
             time.sleep(0.1)
         if error_message is None:
             st.success("Automation finished")
