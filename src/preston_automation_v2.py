@@ -18,7 +18,7 @@ class PrestonRPAV2:
             # Real workflow coordinates
             "hesap_search": (290, 305),
             "hesap_input": (1000, 497),
-            "account_item": (690, 432),  # mavi highlight 6293986 row
+            "account_item": (990, 532),  # mavi highlight area
             "tamam_button": (1163, 820),
             "date_input": (197, 335),
             "yenile_btn": (48, 399),
@@ -58,20 +58,20 @@ class PrestonRPAV2:
             pyautogui.click(*self.coordinates["hesap_search"])
             time.sleep(2)
 
-            # Step 5: Excel'den gelen hesap no'yu input'a yaz
+            # Step 5: Excel'den hesap no yaz
             pyautogui.click(*self.coordinates["hesap_input"])
             pyautogui.typewrite(excel_data["hesap_no"])  # Excel'den tam hesap no
             time.sleep(1.5)  # Filter'ın çalışmasını bekle
 
-            # Step 6: Filtered sonuçtaki tek seçeneği tıkla
-            pyautogui.click(*self.coordinates["account_item"])  # Liste itemını seçili yap
+            # Step 6: Mavi highlight olan item'a tıkla (seçili yap)
+            pyautogui.click(*self.coordinates["account_item"])
             time.sleep(0.5)
 
             # Step 7a: İlk Tamam
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(0.5)
 
-            # Step 7b: İkinci Tamam
+            # Step 7b: İkinci Tamam (double confirmation)
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(1)
 
