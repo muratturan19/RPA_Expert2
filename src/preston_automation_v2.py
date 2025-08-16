@@ -1,5 +1,8 @@
 """Coordinate-based Preston automation implementation."""
 
+from __future__ import annotations
+
+import json
 import time
 from pathlib import Path
 
@@ -9,11 +12,40 @@ import pyautogui
 class PrestonRPAV2:
     """Automation workflow that uses predefined screen coordinates."""
 
-    def __init__(self) -> None:
-        self.coordinates = self.load_coordinates()
+    def __init__(self, coord_file: str | Path | None = None) -> None:
+        self.coordinate_file = (
+            Path(coord_file)
+            if coord_file
+            else Path(__file__).with_name("coordinates.json")
+        )
+        self.coordinates = self.load_coordinates(self.coordinate_file)
 
-    def load_coordinates(self) -> dict[str, tuple[int, int]]:
-        """Load coordinates from mapping."""
+    def load_coordinates(self, path: Path | str | None = None) -> dict[str, tuple[int, int]]:
+        """Load coordinates from mapping file.
+
+        Falls back to :meth:`default_coordinates` if file is missing.
+        """
+        coord_path = Path(path) if path else self.coordinate_file
+        try:
+            if coord_path.suffix in {".yaml", ".yml"}:
+                import yaml  # type: ignore
+
+                data = yaml.safe_load(coord_path.read_text(encoding="utf-8")) or {}
+            else:
+                data = json.loads(coord_path.read_text(encoding="utf-8"))
+            return {k: tuple(v) for k, v in data.items()}
+        except FileNotFoundError:
+            print(f"Coordinate file '{coord_path}' not found. Using default coordinates.")
+            return self.default_coordinates()
+        except Exception as exc:  # pragma: no cover - defensive
+            print(
+                f"Failed to load coordinates from '{coord_path}': {exc}. Using defaults."
+            )
+            return self.default_coordinates()
+
+    @staticmethod
+    def default_coordinates() -> dict[str, tuple[int, int]]:
+        """Return built-in fallback coordinates."""
         return {
             # Mevcut koordinatlar... (dokunma)
             "hesap_search": (290, 305),
@@ -35,6 +67,44 @@ class PrestonRPAV2:
             "kaydet_btn": (919, 589),         # Kaydet
             "kapat_btn": (840, 589),          # Kapat
         }
+
+    def calibrate_coordinate(self, key: str, path: str | Path | None = None) -> tuple[int, int]:
+        """Capture current mouse position and store it under ``key``.
+
+        The captured coordinate is persisted to the mapping file and the in-memory
+        coordinates dictionary is updated.
+        """
+
+        input(f"Hover over '{key}' and press Enter to capture position...")
+        pos = pyautogui.position()
+        coord_path = Path(path) if path else self.coordinate_file
+        coords = (
+            self.load_coordinates(coord_path)
+            if coord_path.exists()
+            else self.default_coordinates()
+        )
+        coords[key] = (pos.x, pos.y)
+        self._save_coordinates(coords, coord_path)
+        self.coordinates = coords
+        return pos.x, pos.y
+
+    def _save_coordinates(
+        self, coords: dict[str, tuple[int, int]], path: Path | None = None
+    ) -> None:
+        """Persist coordinates to JSON/YAML file."""
+
+        coord_path = Path(path) if path else self.coordinate_file
+        serializable = {k: list(v) for k, v in coords.items()}
+        if coord_path.suffix in {".yaml", ".yml"}:
+            import yaml  # type: ignore
+
+            coord_path.write_text(
+                yaml.safe_dump(serializable), encoding="utf-8"
+            )
+        else:
+            coord_path.write_text(
+                json.dumps(serializable, indent=2), encoding="utf-8"
+            )
 
     def dismiss_alerts(self) -> None:
         """Attempt to close any blocking JavaScript alerts."""
