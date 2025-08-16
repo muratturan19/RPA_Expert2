@@ -23,7 +23,7 @@ class PrestonRPAV2:
             "date_input": (197, 335),
             "yenile_btn": (48, 399),
             "yeni_btn": (223, 448),
-            "havale_alma": (695, 385),  # EFT'nin biraz üstü (Havale alma)
+            "havale_alma": (955, 566),  # ✅ Gerçek "Havale alma" koordinatı
             "banka_field": (848, 629),
             "cari_field": (848, 661),
             "save_button": (930, 615),
