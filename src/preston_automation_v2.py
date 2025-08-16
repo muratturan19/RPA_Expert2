@@ -69,7 +69,7 @@ class PrestonRPAV2:
             "belge_tarih_field": (650, 460),  # Belge Tarihi
             "valor_tarih_field": (880, 460),  # Valör Tarihi
             "tutar_input": (848, 694),        # Tutar
-            "aciklama_input": (650, 550),     # Açıklama
+            "aciklama_input": (849, 726),     # ✅ DOĞRU Açıklama field koordinatı
             "kaydet_btn": (1240, 794),        # Kaydet
             "kapat_btn": (1134, 794),         # Kapat
         }
