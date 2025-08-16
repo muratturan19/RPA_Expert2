@@ -104,8 +104,7 @@ class PrestonRPAV2:
 
             return True
         except Exception as exc:  # pragma: no cover - runtime safeguard
-            print(f"Workflow error: {exc}")
-            return False
+            raise RuntimeError(f"Workflow error: {exc}") from exc
 
     def fill_transaction_form(self, data: dict[str, str]) -> None:
         """Fill transaction form fields using Excel data."""
