@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 import pyautogui
+import pyperclip
 
 from config import FORM_FILL_DELAY
 from logger import get_logger
@@ -200,39 +201,39 @@ class PrestonRPAV2:
         logger.debug("Step 12: enter banka kodu")
         pyautogui.click(*self.coordinates["banka_input"])
         time.sleep(FORM_FILL_DELAY)
-        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["banka_kodu"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 13: enter cari kodu")
         pyautogui.click(*self.coordinates["cari_input"])
         time.sleep(FORM_FILL_DELAY)
-        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["cari_kodu"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 14: enter belge tarihi")
         pyautogui.click(*self.coordinates["belge_tarih_field"])
-        pyautogui.hotkey("ctrl", "a")
+        time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tarih"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 15: enter valör tarihi")
         pyautogui.click(*self.coordinates["valor_tarih_field"])
-        pyautogui.hotkey("ctrl", "a")
+        time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tarih"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 16: enter tutar")
         pyautogui.click(*self.coordinates["tutar_input"])
-        pyautogui.hotkey("ctrl", "a")
+        time.sleep(FORM_FILL_DELAY)
         pyautogui.typewrite(data["tutar"])
         time.sleep(FORM_FILL_DELAY)
 
         logger.debug("Step 17: enter açıklama")
         pyautogui.click(*self.coordinates["aciklama_input"])
-        pyautogui.hotkey("ctrl", "a")
-        pyautogui.typewrite(data.get("aciklama", "Test işlemi"))
+        time.sleep(FORM_FILL_DELAY)
+        text = data.get("aciklama", "")
+        pyperclip.copy(text)
+        pyautogui.hotkey("ctrl", "v")
         time.sleep(FORM_FILL_DELAY)
 
     def click_save(self) -> None:
