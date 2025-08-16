@@ -179,18 +179,18 @@ class PrestonRPAV2:
     def fill_transaction_form(self, data: dict[str, str]) -> None:
         """Fill transaction form fields using Excel data."""
 
-        # Step 13: Banka kodu - direkt input'a yaz
+        # Step 13: Banka kodu - excel'den gelen kodu yaz
         pyautogui.click(*self.coordinates["banka_input"])
         time.sleep(0.5)
         pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
-        pyautogui.typewrite("062")  # Test banka kodu
+        pyautogui.typewrite(data["banka_kodu"])
         time.sleep(0.5)
 
-        # Step 14: Cari kodu - direkt input'a yaz
+        # Step 14: Cari kodu - excel'den gelen kodu yaz
         pyautogui.click(*self.coordinates["cari_input"])
         time.sleep(0.5)
         pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
-        pyautogui.typewrite("120.12.001")  # Test cari kodu
+        pyautogui.typewrite(data["cari_kodu"])
         time.sleep(0.5)
 
         # Step 15: Belge tarihi
