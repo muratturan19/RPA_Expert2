@@ -15,7 +15,7 @@ class PrestonRPAV2:
     def load_coordinates(self) -> dict[str, tuple[int, int]]:
         """Load coordinates from mapping."""
         return {
-            # Real workflow coordinates
+            # Mevcut koordinatlar... (dokunma)
             "hesap_search": (290, 305),
             "hesap_input": (1000, 497),
             "account_item": (990, 532),  # mavi highlight area
@@ -24,15 +24,16 @@ class PrestonRPAV2:
             "yenile_btn": (48, 399),
             "yeni_btn": (223, 448),
             "havale_alma": (955, 566),  # ✅ Gerçek "Havale alma" koordinatı
-            "banka_field": (848, 629),
-            "cari_field": (848, 661),
-            "save_button": (930, 615),
-            "close_button": (883, 615),
-            "belge_tarih": (611, 462),
-            "valor_tarih": (866, 462),
-            "tutar_field": (635, 509),
-            "aciklama_field": (635, 533),
-            "yeni_belge_btn": (760, 383),
+
+            # ✅ YENİ - Direkt input field'lar:
+            "banka_input": (629, 277),        # Banka input field (062 yazan yer)
+            "cari_input": (629, 309),         # Cari input field (120. yazan yer)
+            "belge_tarih_field": (629, 442),  # Belge Tarihi
+            "valor_tarih_field": (873, 442),  # Valör Tarihi
+            "tutar_input": (629, 514),        # Tutar
+            "aciklama_input": (629, 538),     # Açıklama
+            "kaydet_btn": (919, 589),         # Kaydet
+            "kapat_btn": (840, 589),          # Kapat
         }
 
     def dismiss_alerts(self) -> None:
@@ -108,38 +109,49 @@ class PrestonRPAV2:
 
     def fill_transaction_form(self, data: dict[str, str]) -> None:
         """Fill transaction form fields using Excel data."""
-        # Step 10: Click Yeni belge
-        pyautogui.click(*self.coordinates["yeni_belge_btn"])
+
+        # Step 13: Banka kodu - direkt input'a yaz
+        pyautogui.click(*self.coordinates["banka_input"])
+        time.sleep(0.5)
+        pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
+        pyautogui.typewrite("062")  # Test banka kodu
         time.sleep(0.5)
 
-        # Step 11a: Belge tarihi
-        pyautogui.click(*self.coordinates["belge_tarih"])
+        # Step 14: Cari kodu - direkt input'a yaz
+        pyautogui.click(*self.coordinates["cari_input"])
+        time.sleep(0.5)
+        pyautogui.hotkey("ctrl", "a")  # Mevcut text'i seç
+        pyautogui.typewrite("120.12.001")  # Test cari kodu
+        time.sleep(0.5)
+
+        # Step 15: Belge tarihi
+        pyautogui.click(*self.coordinates["belge_tarih_field"])
+        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tarih"])
+        time.sleep(0.5)
 
-        # Step 11b: Valör tarihi
-        pyautogui.click(*self.coordinates["valor_tarih"])
+        # Step 16: Valör tarihi
+        pyautogui.click(*self.coordinates["valor_tarih_field"])
+        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tarih"])
+        time.sleep(0.5)
 
-        # Step 12: Banka kodu
-        pyautogui.click(*self.coordinates["banka_field"])
-        pyautogui.typewrite(data["banka_kodu"])
-
-        # Step 13: Cari kodu
-        pyautogui.click(*self.coordinates["cari_field"])
-        pyautogui.typewrite(data["cari_kodu"])
-
-        # Step 14: Tutar input
-        pyautogui.click(*self.coordinates["tutar_field"])
+        # Step 17: Tutar
+        pyautogui.click(*self.coordinates["tutar_input"])
+        pyautogui.hotkey("ctrl", "a")
         pyautogui.typewrite(data["tutar"])
+        time.sleep(0.5)
 
-        # Step 15: Açıklama
-        pyautogui.click(*self.coordinates["aciklama_field"])
-        pyautogui.typewrite(data["aciklama"])
+        # Step 18: Açıklama
+        pyautogui.click(*self.coordinates["aciklama_input"])
+        pyautogui.hotkey("ctrl", "a")
+        pyautogui.typewrite(data.get("aciklama", "Test işlemi"))
+        time.sleep(0.5)
 
     def click_save(self) -> None:
         """Trigger save action."""
-        pyautogui.click(*self.coordinates["save_button"])
+        pyautogui.click(*self.coordinates["kaydet_btn"])
 
     def click_close(self) -> None:
         """Close the current window."""
-        pyautogui.click(*self.coordinates["close_button"])
+        pyautogui.click(*self.coordinates["kapat_btn"])
