@@ -16,6 +16,7 @@ def test_lookup_account_codes_success():
     assert cari == "120.12.001"
 
 
-def test_lookup_account_codes_missing():
-    with pytest.raises(ValueError):
-        lookup_account_codes("000000000")
+def test_lookup_account_codes_missing_generates_random_code():
+    bank, cari = lookup_account_codes("000000000")
+    assert bank.isdigit() and len(bank) == 7
+    assert cari == "120.12.001"

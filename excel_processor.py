@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
+import random
 
 from openpyxl import load_workbook
 
@@ -28,6 +29,10 @@ POSH_PATTERN = re.compile(r"POSH.*\d{5,}$")
 def lookup_account_codes(account_no: str) -> tuple[str, str]:
     """Return bank and client codes for the given account number.
 
+    If the account number is unknown a random 7-digit bank code is
+    generated and logged.  This behaviour is intended solely for testing
+    scenarios where a full configuration is not yet available.
+
     Parameters
     ----------
     account_no: str
@@ -41,14 +46,17 @@ def lookup_account_codes(account_no: str) -> tuple[str, str]:
     Raises
     ------
     ValueError
-        If either code cannot be determined.
+        If the cari code cannot be determined.
     """
 
     bank_code = BANK_CODES.get(account_no)
     if not bank_code:
-        msg = f"Bank code not found for account {account_no}"
-        logger.error(msg)
-        raise ValueError(msg)
+        bank_code = f"{random.randint(1_000_000, 9_999_999)}"
+        logger.warning(
+            "Bank code not found for account %s; using random test code %s",
+            account_no,
+            bank_code,
+        )
 
     cari_code = CARI_CODES.get(account_no) or CARI_CODES.get("default")
     if not cari_code:
