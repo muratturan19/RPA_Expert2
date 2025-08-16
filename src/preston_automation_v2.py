@@ -8,6 +8,10 @@ from pathlib import Path
 
 import pyautogui
 
+from logger import get_logger
+
+logger = get_logger(__name__)
+
 
 class PrestonRPAV2:
     """Automation workflow that uses predefined screen coordinates."""
@@ -122,55 +126,68 @@ class PrestonRPAV2:
     def execute_real_workflow(self, excel_data: dict[str, str]) -> bool:
         """Execute steps 4-17 using values from Excel data."""
         try:
-            # Clear potential blocking alerts
+            logger.debug("Dismissing alerts")
             self.dismiss_alerts()
+            logger.debug("Alerts dismissed")
 
-            # Step 4: Click hesap search
+            logger.debug("Step 4: click hesap search")
             pyautogui.click(*self.coordinates["hesap_search"])
             time.sleep(2)
+            logger.debug("Step 4 completed")
 
-            # Step 5: Excel'den hesap no yaz
+            logger.debug("Step 5: enter hesap no")
             pyautogui.click(*self.coordinates["hesap_input"])
             pyautogui.typewrite(excel_data["hesap_no"])  # Excel'den tam hesap no
             time.sleep(1.5)  # Filter'ın çalışmasını bekle
+            logger.debug("Step 5 completed")
 
-            # Step 6: Mavi highlight olan item'a tıkla (seçili yap)
+            logger.debug("Step 6: select account item")
             pyautogui.click(*self.coordinates["account_item"])
             time.sleep(0.5)
+            logger.debug("Step 6 completed")
 
-            # Step 7a: İlk Tamam
+            logger.debug("Step 7a: first Tamam")
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(0.5)
+            logger.debug("Step 7a completed")
 
-            # Step 7b: İkinci Tamam (double confirmation)
+            logger.debug("Step 7b: second Tamam")
             pyautogui.click(*self.coordinates["tamam_button"])
             time.sleep(1)
+            logger.debug("Step 7b completed")
 
-            # Step 8: Fill date
+            logger.debug("Step 8: fill date")
             pyautogui.click(*self.coordinates["date_input"])
             pyautogui.typewrite(excel_data["tarih"])
             time.sleep(0.5)
+            logger.debug("Step 8 completed")
 
-            # Step 9: Click Yenile
+            logger.debug("Step 9: click Yenile")
             pyautogui.click(*self.coordinates["yenile_btn"])
             time.sleep(2)
+            logger.debug("Step 9 completed")
 
-            # Step 10: Click Yeni
+            logger.debug("Step 10: click Yeni")
             pyautogui.click(*self.coordinates["yeni_btn"])
             time.sleep(1)
+            logger.debug("Step 10 completed")
 
-            # Step 11: Select Havale alma
+            logger.debug("Step 11: select Havale alma")
             pyautogui.click(*self.coordinates["havale_alma"])
             time.sleep(1)
+            logger.debug("Step 11 completed")
 
-            # Steps 12-17: Fill form with Excel data
+            logger.debug("Steps 12-17: fill transaction form")
             self.fill_transaction_form(excel_data)
+            logger.debug("Form filling completed")
 
-            # Step 18: Save
+            logger.debug("Step 18: save")
             self.click_save()
+            logger.debug("Step 18 completed")
 
-            # Step 19: Close
+            logger.debug("Step 19: close window")
             self.click_close()
+            logger.debug("Step 19 completed")
 
             return True
         except Exception as exc:  # pragma: no cover - runtime safeguard

@@ -17,7 +17,7 @@ import streamlit as st
 # imports keeps things simple and avoids ``ModuleNotFoundError`` when the
 # package name ``preston_rpa`` is unavailable.
 from excel_processor import process_excel_to_coordinates
-from logger import get_logger
+from logger import get_logger, configure_logging
 from src.preston_automation_v2 import PrestonRPAV2
 
 logger = get_logger(__name__)
@@ -56,12 +56,15 @@ def main():
         simulator_path = st.text_input(
             "Simulator Path", value=str(Path(__file__).parent / "preston2.html")
         )
+        log_level = st.selectbox("Log Level", ["INFO", "DEBUG"])
         start_button = st.button("Start RPA", type="primary")
 
     log_box = st.empty()
     progress_placeholder = st.progress(0.0)
+    log_path = Path(__file__).with_name("automation.log")
 
     if start_button and uploaded_file is not None:
+        configure_logging(log_level)
         with io.BytesIO(uploaded_file.read()) as buffer:
             excel_path = Path("uploaded.xlsx")
             excel_path.write_bytes(buffer.getvalue())
@@ -86,20 +89,22 @@ def main():
                 st.error(error_message)
                 break
             progress_placeholder.progress(message)
+            try:
+                log_content = log_path.read_text(encoding="utf-8")
+            except Exception:
+                log_content = ""
+            log_box.text(log_content)
             time.sleep(0.1)
         if error_message is None:
             st.success("Automation finished")
 
-    log_path = Path(__file__).with_name("automation.log")
     if log_path.exists():
         try:
             log_content = log_path.read_text(encoding="utf-8")
         except Exception as exc:
             st.error(f"Failed to read log file: {exc}")
             log_content = ""
-    else:
-        log_content = ""
-    log_box.text(log_content)
+        log_box.text(log_content)
 
 
 if __name__ == "__main__":

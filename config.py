@@ -2,6 +2,9 @@
 Configuration settings for Preston RPA system.
 """
 
+# Logging
+DEFAULT_LOG_LEVEL = "INFO"
+
 # OCR Settings
 # Accept slightly lower confidence OCR matches to improve robustness
 OCR_CONFIDENCE = 0.6
