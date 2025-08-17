@@ -1,0 +1,9 @@
+streamlit
+openpyxl
+pyautogui
+pyperclip
+pytesseract
+opencv-python
+numpy
+Pillow
+pyyaml
